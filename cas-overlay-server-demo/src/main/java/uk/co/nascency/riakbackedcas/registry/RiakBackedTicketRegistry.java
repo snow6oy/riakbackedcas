@@ -8,6 +8,7 @@ import com.basho.riak.client.bucket.Bucket;
 import org.apache.commons.lang.SerializationUtils;
 import org.jasig.cas.ticket.Ticket;
 import org.jasig.cas.ticket.TicketGrantingTicketImpl;
+import org.jasig.cas.ticket.registry.AbstractDistributedTicketRegistry;
 import org.jasig.cas.ticket.registry.AbstractTicketRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,7 @@ import java.util.List;
 
 import static com.basho.riak.client.RiakFactory.pbcClient;
 
-public class RiakBackedTicketRegistry extends AbstractTicketRegistry {
+public class RiakBackedTicketRegistry extends AbstractDistributedTicketRegistry {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
@@ -37,6 +38,22 @@ public class RiakBackedTicketRegistry extends AbstractTicketRegistry {
         } catch (RiakRetryFailedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void updateTicket(Ticket ticket) {
+        try {
+            logger.info("Updating TICKET " + ticket.getId() + " from RIAK");
+            casBucket.<byte[]>store(ticket.getId(), SerializationUtils.serialize(ticket)).execute();
+
+        } catch (RiakRetryFailedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected boolean needsCallback() {
+        return false;
     }
 
     @Override
