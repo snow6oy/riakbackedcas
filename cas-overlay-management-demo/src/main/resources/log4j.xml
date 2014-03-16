@@ -33,7 +33,7 @@
     </appender>
 
     <appender name="cas-management" class="org.apache.log4j.RollingFileAppender">
-        <param name="File" value="cas-management.log" />
+        <param name="File" value="logs/cas-management.log" />
         <param name="MaxFileSize" value="512KB" />
         <param name="MaxBackupIndex" value="3" />
         <layout class="org.apache.log4j.PatternLayout">
